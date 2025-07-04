@@ -10,10 +10,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  EMPLOYEE
+}
+
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+  role     Role   @default(EMPLOYEE)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Employee {
+  id         Int      @id @default(autoincrement())
+  name       String
+  age        Int
+  class      String?
+  subjects   String   // JSON string of subjects array
+  attendance Float?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 } 

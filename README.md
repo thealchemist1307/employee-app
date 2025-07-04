@@ -1,135 +1,383 @@
-# Turborepo starter
+# Employee Management System
 
-This Turborepo starter is maintained by the Turborepo core team.
+A full-stack employee management application built with **TurboRepo**, **GraphQL**, **React**, and **Prisma**.
 
-## Using this example
+## 🏗️ Architecture
 
-Run the following command:
+This is a monorepo built with TurboRepo containing:
 
-```sh
-npx create-turbo@latest
-```
+- **Backend**: Apollo Server with GraphQL, Prisma ORM, SQLite database
+- **Frontend**: React with TypeScript and Apollo Client
+- **Shared**: UI components and configurations
 
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+## 📁 Project Structure
 
 ```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+employee-app/
+├── apps/
+│   ├── backend/          # GraphQL API server
+│   │   ├── src/
+│   │   │   ├── graphql/
+│   │   │   │   ├── schema.ts      # GraphQL schema definitions
+│   │   │   │   └── resolvers.ts   # GraphQL resolvers
+│   │   │   ├── auth/
+│   │   │   │   └── seed.ts        # Database seeding script
+│   │   │   └── index.ts           # Server entry point
+│   │   ├── prisma/
+│   │   │   └── schema.prisma      # Database schema
+│   │   └── package.json
+│   ├── frontend/         # React application
+│   │   ├── src/
+│   │   └── package.json
+│   ├── docs/            # Documentation site
+│   └── web/             # Web application
+├── packages/
+│   └── ui/              # Shared UI components
+├── turbo.json           # TurboRepo configuration
+└── package.json         # Root package.json
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+## 🚀 Quick Start
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+### Prerequisites
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+- Node.js 18+
+- npm
 
-### Develop
+### Installation
 
-To develop all apps and packages, run the following command:
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/thealchemist1307/employee-app.git
+   cd employee-app
+   ```
 
-```
-cd my-turborepo
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+3. **Set up the database**
+   ```bash
+   cd apps/backend
+   npx prisma migrate dev
+   npm run seed
+   ```
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
+4. **Start development servers**
+   ```bash
+   # From the root directory
+   npm run dev
+   ```
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+This will start:
+- **Backend**: `http://localhost:4000/graphql`
+- **Frontend**: `http://localhost:3000`
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+## 🗄️ Database Schema
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+### User Model
+```prisma
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  role      Role     @default(EMPLOYEE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
+### Employee Model
+```prisma
+model Employee {
+  id         Int      @id @default(autoincrement())
+  name       String
+  age        Int
+  class      String?
+  subjects   String   // JSON string of subjects array
+  attendance Float?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
 ```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+### Role Enum
+```prisma
+enum Role {
+  ADMIN
+  EMPLOYEE
+}
 ```
 
-## Useful Links
+## 🔐 Authentication
 
-Learn more about the power of Turborepo:
+### Default Admin User
+- **Email**: `admin@demo.com`
+- **Password**: `admin123`
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+### Login
+```graphql
+mutation {
+  login(email: "admin@demo.com", password: "admin123")
+}
+```
+
+Returns a JWT token that should be included in the Authorization header:
+```json
+{
+  "authorization": "Bearer <your-jwt-token>"
+}
+```
+
+## 📡 GraphQL API
+
+### Queries
+
+#### Get All Employees
+```graphql
+query {
+  employees(
+    filter: { class: "10th", minAge: 15, maxAge: 18 }
+    page: 1
+    pageSize: 10
+    sortBy: "name"
+  ) {
+    id
+    name
+    age
+    class
+    subjects
+    attendance
+  }
+}
+```
+
+#### Get Single Employee
+```graphql
+query {
+  employee(id: "1") {
+    id
+    name
+    age
+    class
+    subjects
+    attendance
+  }
+}
+```
+
+#### Get Current User
+```graphql
+query {
+  me {
+    id
+    email
+    role
+  }
+}
+```
+
+### Mutations
+
+#### Add Employee (Admin only)
+```graphql
+mutation {
+  addEmployee(
+    input: {
+      name: "John Doe"
+      age: 16
+      class: "10th"
+      subjects: ["Math", "Science", "English"]
+      attendance: 85.5
+    }
+  ) {
+    id
+    name
+    age
+    class
+    subjects
+    attendance
+  }
+}
+```
+
+#### Update Employee (Admin only)
+```graphql
+mutation {
+  updateEmployee(
+    id: "1"
+    input: {
+      name: "John Doe Updated"
+      age: 17
+      class: "11th"
+      subjects: ["Math", "Physics", "Chemistry"]
+      attendance: 90.0
+    }
+  ) {
+    id
+    name
+    age
+    class
+    subjects
+    attendance
+  }
+}
+```
+
+## 🛠️ Development
+
+### Backend Commands
+```bash
+cd apps/backend
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
+
+# Seed database
+npm run seed
+
+# Generate Prisma client
+npx prisma generate
+
+# Run database migrations
+npx prisma migrate dev
+```
+
+### Frontend Commands
+```bash
+cd apps/frontend
+
+# Start development server
+npm start
+
+# Build for production
+npm run build
+
+# Run tests
+npm test
+```
+
+### Root Commands
+```bash
+# Start all apps in parallel
+npm run dev
+
+# Build all apps
+npm run build
+
+# Lint all packages
+npm run lint
+
+# Type checking
+npm run check-types
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Create `.env` file in `apps/backend/`:
+```env
+DATABASE_URL="file:./dev.db"
+JWT_SECRET="your-super-secret-jwt-key-change-this-in-production"
+```
+
+### TurboRepo Configuration
+
+The `turbo.json` file configures the build pipeline:
+```json
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**"]
+    },
+    "dev": {
+      "cache": false
+    }
+  }
+}
+```
+
+## 🧪 Testing the API
+
+1. **Start the backend server**
+   ```bash
+   cd apps/backend
+   npm run dev
+   ```
+
+2. **Open GraphQL Playground**
+   Navigate to `http://localhost:4000/graphql`
+
+3. **Login to get a token**
+   ```graphql
+   mutation {
+     login(email: "admin@demo.com", password: "admin123")
+   }
+   ```
+
+4. **Add the token to HTTP Headers**
+   ```json
+   {
+     "authorization": "Bearer <your-token>"
+   }
+   ```
+
+5. **Test queries and mutations**
+
+## 📦 Dependencies
+
+### Backend
+- `@apollo/server` - GraphQL server
+- `@prisma/client` - Database ORM
+- `express` - Web framework
+- `bcryptjs` - Password hashing
+- `jsonwebtoken` - JWT authentication
+- `cors` - CORS middleware
+- `dotenv` - Environment variables
+
+### Frontend
+- `react` - UI library
+- `@apollo/client` - GraphQL client
+- `typescript` - Type safety
+
+### Development
+- `turbo` - Monorepo build system
+- `ts-node-dev` - TypeScript development server
+- `prisma` - Database toolkit
+
+## 🚀 Deployment
+
+### Backend Deployment
+1. Build the application: `npm run build`
+2. Set production environment variables
+3. Deploy the `dist/` folder
+
+### Frontend Deployment
+1. Build the application: `npm run build`
+2. Deploy the `build/` folder to a static hosting service
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+For support, please open an issue on GitHub or contact the development team.
